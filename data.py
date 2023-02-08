@@ -220,6 +220,15 @@ def rain(region: str):
     return 'Unknown Climate'
 
 
+def mean_sale_price(giregion: str, year: str):
+    """Returns the average price of sale per tonnes for a region."""
+    df = pd.read_csv("wine_prices.csv", index_col=0)
+    if giregion in df.index:
+        if year in df.columns:
+            return df.loc[giregion, year]
+    return None
+
+
 class DataDictionary:
     def __init__(self, pwd: str):
         """Initializes a data dictionary object."""
