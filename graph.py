@@ -5,7 +5,7 @@ import pandas as pd
 from scipy import stats
 
 
-def multihist(df: pd.DataFrame, bins=10) -> None:
+def multihist(df: pd.DataFrame, bins=10, color="c") -> None:
     """Plot a graph for each column in the given dataframe
 
     Args:
@@ -13,16 +13,21 @@ def multihist(df: pd.DataFrame, bins=10) -> None:
         bins: Number of bins for the histogram
     """
     square = ceil(sqrt(len(df.columns)))
-    fig, ax = plt.subplots(ceil(len(df.columns) / square), square,
-                           figsize=(20, 10))
+    fig, ax = plt.subplots(
+        ceil(len(df.columns) / square)
+        , square
+        , figsize=(20, 10))
     i = 0
     for col in df.columns:
         if df[col].dtype != object:
             ax[i // square][i % square].hist(
-                df[~np.isnan(df[col])][col], bins=bins)
+                df[~np.isnan(df[col])][col]
+                , bins=bins
+                , color=color)
 
             ax[i // square][i % square].set_title(col)
             i += 1
+    return fig, ax
 
 
 def qq(df: pd.DataFrame) -> None:
