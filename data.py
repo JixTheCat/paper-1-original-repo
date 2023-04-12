@@ -10,6 +10,14 @@ import numpy as np
 import pandas as pd
 
 
+def centre_scale(df: pd.DataFrame()):
+    df_floats = df.select_dtypes(float)
+    df_floats = df_floats - df_floats.mean()
+    df_floats = df_floats/(df_floats.max()-df_floats.min())
+    df_o = df.select_dtypes("O")
+    return pd.concat([df_floats, df_o], axis=1)
+
+
 def fill_missing_value(df: pd.DataFrame, subset: str):
     """Fill missing values using median of a given subset in a df.
 

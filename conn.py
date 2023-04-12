@@ -1,6 +1,6 @@
 #from numpy import astype
 from os import path, makedirs
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 import logging
 import pandas as pd
@@ -96,7 +96,9 @@ class SWA:
         Returns:
             A pandas dataframe of the returned view.
         """
-        return pd.read_sql(select, con=self.cnx)
+        with self.cnx.connect() as conn:
+            answer = pd.read_sql_query(text(select), conn)
+        return answer
 
     def create(self, populate=True, limit=0):
         """
