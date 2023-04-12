@@ -5,3 +5,4 @@ carbon_converter.py
 conn.py
 venv/*
 data/*
+__pycache__/*
