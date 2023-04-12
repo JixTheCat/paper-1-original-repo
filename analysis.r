@@ -25,23 +25,36 @@ summary(lm(df$vtha ~ df$tha*df$giregion*df$data_year_id))
 # here are some plots
 plot(df$area_harvested , df$tonnes_grapes_harvested*df$average_per_tonne, col=factor(df$giregion))
 plot(df$area_harvested , df$tonnes_grapes_harvested, col=factor(df$giregion))
-
+abline(predict(mod, df[df$giregion=="McLaren Vale" , ]), df$area_harvested)
 #######################
 # Lets make some maps #
 library(terra)
 v <- vect("data/Wine_Geographical_Indications_Australia_2022/Wine_Geographical_Indications_Australia_2022.shp")
+aus <- vect("data/STE_2021_AUST_SHP_GDA2020/STE_2021_AUST_GDA2020.shp")
+
 v$tha <- 0
 v$vtha <- 0
 
 mean.t <- function(x) {mean(x, na.rm=TRUE)}
-aggs <- aggregate(df$tha, list(df$giregion), FUN=mean.t)
+aggs.tha <- aggregate(df$tha, list(df$giregion), FUN=mean.t)
+aggs.vtha <- aggregate(df$vtha, list(df$giregion), FUN=mean.t)
 
 for (region in unique(df$giregion))
 {
-v[v$GI_NAME==region , ]$tha <- aggs[aggs$Group.1==region , ]$x
+v[v$GI_NAME==region , ]$tha <- aggs.tha[aggs$Group.1==region , ]$x
+v[v$GI_NAME==region , ]$vtha <- aggs.vtha[aggs$Group.1==region , ]$x
 }
 
 plot(v, "tha")
+lines(aus)
 
+#    data (or map) frame
+#    map legend
+#    map title
+#    north arrow
+#    map scale bar
+#    metadata (or map citation)
+#    border (or neatline)
+#    inset (or locator) map.
 
 
