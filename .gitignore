@@ -4,3 +4,4 @@ data.py
 carbon_converter.py
 conn.py
 venv/*
+data/*
