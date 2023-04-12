@@ -1,6 +1,6 @@
 *.feather
 *.csv
 data.py
-carbon_covernter.py
+carbon_converter.py
 conn.py
 venv/*
