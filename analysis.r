@@ -26,6 +26,22 @@ summary(lm(df$vtha ~ df$tha*df$giregion*df$data_year_id))
 plot(df$area_harvested , df$tonnes_grapes_harvested*df$average_per_tonne, col=factor(df$giregion))
 plot(df$area_harvested , df$tonnes_grapes_harvested, col=factor(df$giregion))
 
+#######################
+# Lets make some maps #
+library(terra)
+v <- vect("data/Wine_Geographical_Indications_Australia_2022/Wine_Geographical_Indications_Australia_2022.shp")
+v$tha <- 0
+v$vtha <- 0
+
+mean.t <- function(x) {mean(x, na.rm=TRUE)}
+aggs <- aggregate(df$tha, list(df$giregion), FUN=mean.t)
+
+for (region in unique(df$giregion))
+{
+v[v$GI_NAME==region , ]$tha <- aggs[aggs$Group.1==region , ]$x
+}
+
+plot(v, "tha")
 
 
 
