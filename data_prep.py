@@ -3,7 +3,7 @@
 It requires the SWA data libraries used in this project to function.
 """
 # These are three files required:
-from data import rain, temp
+from data import rain, temp, mean_sale_price
 from carbon_converter import *
 # Note that conn.py is also required due to data needing it.
 
@@ -18,6 +18,17 @@ df = pd.read_feather("df.feather")
 # $1 sale price is ludicruous - There are other ludicruous prices like $50 etc as well. You can go harder at removing these.
 df.loc[1848, "average_per_tonne"] = np.nan
 df.loc[5493, "average_per_tonne"] = np.nan
+# We fill in the average prices per region to flesh out the data:
+
+df["average_per_tonne"] = df["average_per_tonne"].replace({0: np.nan})
+avg_prices = df[
+    df["average_per_tonne"].isnull()].apply(
+    lambda x: mean_sale_price(x["giregion"],
+                              x["data_year_id"]),
+    axis=1)
+df["average_per_tonne"] = df["average_per_tonne"].replace({0: np.nan})
+df["average_per_tonne"] = df["average_per_tonne"].combine_first(avg_prices)
+
 # Less than 1ha we can write off.
 #df = df.drop(index=df[df['area_harvested']<1].index)
 
