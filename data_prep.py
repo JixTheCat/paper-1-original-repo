@@ -95,17 +95,29 @@ df.loc[df["vineyard_area_red_grapes"]>0, "red_grapes"] = 1
 # include value
 df["value"] = df["area_harvested"]*df["average_per_tonne"]
 # include ratios
-df["tha"] = df["tonnes_grapes_harvested"].div(df["area_harvested"])
-df["vtha"] = df["tha"]*df["average_per_tonne"]
-
-
+#df["tha"] = df["tonnes_grapes_harvested"].div(df["area_harvested"])
+#df["vtha"] = df["tha"]*df["average_per_tonne"]
 
 # The variables are logarithmically transformed and then centrered.
 df_floats = df.select_dtypes(float)
 df_o = df.select_dtypes("O")
 df_int = df.select_dtypes(int)
 
+# We remove negative values
+for col in df_floats.columns:
+    #We make an exception for gross margin as people can lose money
+    if col == "gross_margin": 
+        continue
+    df_floats.loc[df_floats[col]<1, col] = np.nan 
+
 df_floats = df_floats.apply(np.log)
+
+# we create variables scaled by area
+for col in df_floats.columns:
+    # We don't want to divide area by itself.
+    if col == "area_harvested": 
+        continue
+    df_floats["ha_" + col] = df_floats[col].div(df_floats["area_harvested"])
 
 # Be sure to remove any values that become infinite, or are Null due to the transform or are missing/invalid values.
 df_floats = df_floats.replace({np.inf: np.nan, -np.inf: np.nan})
@@ -124,5 +136,7 @@ df = pd.concat([df_floats, df_o, df_int], axis=1)
 #df = df.replace({np.nan: 0}) <- this is bad
 
 df.to_csv("df.csv")
+
+
 
 
