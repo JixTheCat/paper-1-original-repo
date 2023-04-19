@@ -15,9 +15,12 @@ import numpy as np
 df = pd.read_feather("df.feather")
 
 # Lets get rid of some errors!
-# $1 sale price is ludicruous - There are other ludicruous prices like $50 etc as well. You can go harder at removing these.
+# $1 sale price is ludicruous - There are other ludicruous prices like $160 etc
+# as well. Also things like $50 operating costs per hectare. You can go harder
+# at removing these but you lose a lot of data!
 df.loc[1848, "average_per_tonne"] = np.nan
 df.loc[5493, "average_per_tonne"] = np.nan
+df = df.drop(df[df["giregion"]=="0"].index)
 # We fill in the average prices per region to flesh out the data:
 
 df["average_per_tonne"] = df["average_per_tonne"].replace({0: np.nan})
@@ -30,6 +33,7 @@ df["average_per_tonne"] = df["average_per_tonne"].replace({0: np.nan})
 df["average_per_tonne"] = df["average_per_tonne"].combine_first(avg_prices)
 
 # Less than 1ha we can write off.
+# These were not such a problem?
 #df = df.drop(index=df[df['area_harvested']<1].index)
 
 ###################################
@@ -84,9 +88,12 @@ df.loc[df["climate"]=="Unknown Climate Unknown Climate", "climate"] = np.nan
 # changing ha to m2 for area to remove 1s and fractions for the log transform
 df["area_harvested"] = df["area_harvested"]*1000
 
-#create a flage for disease/fire/frost
+#create a flag for disease/fire/frost
 df["not_harvested"] = 0
 df.loc[df["area_not_harvested"]>0, "not_harvested"] = 1
+# dropiing not harvested area due to issues does not change much at all
+#df = df.drop(df[df["not_harvested"]==1].index)
+
 
 # red grapes
 df["red_grapes"] = 0
