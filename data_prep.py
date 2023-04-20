@@ -15,9 +15,7 @@ import numpy as np
 df = pd.read_feather("df.feather")
 
 # Lets get rid of some errors!
-# $1 sale price is ludicruous - There are other ludicruous prices like $160 etc
-# as well. Also things like $50 operating costs per hectare. You can go harder
-# at removing these but you lose a lot of data!
+# $1 sale price is ludicruous - There are other ludicruous prices like $50 etc as well. You can go harder at removing these.
 df.loc[1848, "average_per_tonne"] = np.nan
 df.loc[5493, "average_per_tonne"] = np.nan
 df = df.drop(df[df["giregion"]=="0"].index)
@@ -91,7 +89,7 @@ df["area_harvested"] = df["area_harvested"]*1000
 #create a flag for disease/fire/frost
 df["not_harvested"] = 0
 df.loc[df["area_not_harvested"]>0, "not_harvested"] = 1
-# dropiing not harvested area due to issues does not change much at all
+# dropiing not harvested area due to
 #df = df.drop(df[df["not_harvested"]==1].index)
 
 
@@ -117,6 +115,17 @@ for col in df_floats.columns:
         continue
     df_floats.loc[df_floats[col]<1, col] = np.nan 
 
+# we create variables scaled by area
+for col in df_floats.columns:
+    # We don't want to divide area by itself.
+    if col == "area_harvested": 
+        continue
+    df_floats["ha_" + col] = df_floats[col].div(df_floats["area_harvested"]).copy()
+
+# We spit out a copy that is not transformed for making maps and other summary
+# stats we want that make sense.
+pd.concat([df_floats, df_o, df_int], axis=1).to_csv("no_trans.csv")
+
 df_floats = df_floats.apply(np.log)
 
 # we create variables scaled by area
@@ -124,7 +133,8 @@ for col in df_floats.columns:
     # We don't want to divide area by itself.
     if col == "area_harvested": 
         continue
-    df_floats["ha_" + col] = df_floats[col].div(df_floats["area_harvested"])
+    df_floats["ha_" + col] = df_floats[col].div(df_floats["area_harvested"]).copy()
+
 
 # Be sure to remove any values that become infinite, or are Null due to the transform or are missing/invalid values.
 df_floats = df_floats.replace({np.inf: np.nan, -np.inf: np.nan})
@@ -138,12 +148,8 @@ df_floats = df_floats.drop(df_floats[df_floats["total_emissions"].isnull()].inde
 df_floats = df_floats - df_floats.mean()
 df_floats = df_floats/df_floats.std()
 
-df = pd.concat([df_floats, df_o, df_int], axis=1)
+pd.concat([df_floats, df_o, df_int], axis=1).to_csv("df.csv")
 
 #df = df.replace({np.nan: 0}) <- this is bad
-
-df.to_csv("df.csv")
-
-
 
 
