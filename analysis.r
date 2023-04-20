@@ -51,9 +51,9 @@ anova(lm(df$ha_value ~ df$ha_tonnes_grapes_harvested))
 # note that scope1 is only good for predicting the amount of grapes not the quality.
 
 # here are some plots
-plot(df$area_harvested , df$tonnes_grapes_harvested*df$average_per_tonne, col=factor(df$giregion))
-plot(df$area_harvested , df$tonnes_grapes_harvested, col=factor(df$giregion))
-abline(predict(mod, df[df$giregion=="McLaren Vale" , ]), df$area_harvested)
+ggplot(df, aes(x=tonnes_grapes_harvested, y=tonnes_grapes_harvested*average_per_tonne, col=climate))+geom_point()+xlab("Yield")+ylab("Yield * Average Price")+theme_light()
+ggplot(df, aes(x=ha_tonnes_grapes_harvested, y=ha_tonnes_grapes_harvested*average_per_tonne, col=climate))+geom_point()+xlab("Yield / Area Harvested")+ylab("Yield * Average Price / Area Harvested")+theme_light()
+
 #######################
 # Lets make some maps #
 library(terra)
@@ -66,7 +66,7 @@ v$ha_value <- 0
 
 mean.t <- function(x) {mean(x, na.rm=TRUE)}
 aggs.ha_tonnes_grapes_harvested <- aggregate(nt$ha_tonnes_grapes_harvested*1000, list(nt$giregion), FUN=mean.t)
-aggs.ha_value <- aggregate(nt$ha_value*1000, list(nt$giregion), FUN=mean.t)
+aggs.ha_value <- aggregate(nt$ha_value, list(nt$giregion), FUN=mean.t)
 
 for (region in unique(df$giregion))
 {
@@ -75,7 +75,7 @@ v[v$GI_NAME==region , ]$ha_value <- aggs.ha_value[aggs.ha_value$Group.1==region 
 }
 
 # note these are the averages.
-plot(v, "ha_tonnes_grapes_harvested")
+plot(v, "ha_value")
 lines(aus)
 sbar(1000, lonlat=TRUE, label="1000km")
 north(xy="bottomleft", type=2)
