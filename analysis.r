@@ -1,30 +1,51 @@
 # data_prep.py has to be executed in order for df.csv to exist
+set.seed(100)
 df <- read.csv("df.csv")
 
 model1 <- lm(tonnes_grapes_harvested ~ data_year_id+giregion+area_harvested+water_used+scope1,data=df)
-model2 <- lm(df$ha_tonnes_grapes_harvested ~ df$area_harvested*((df$scope1)+df$water_used)+df$data_year_id:df$giregion)
+model2 <- lm(ha_tonnes_grapes_harvested ~ area_harvested*((scope1)+water_used)+data_year_id:giregion, data=df)
 model3 <- lm(value ~ data_year_id+giregion+area_harvested+water_used+scope1,data=df)
-model4 <- lm(df$ha_value ~ df$area_harvested*((df$scope1)+df$water_used)+df$data_year_id:df$giregion)
+model4 <- lm(ha_value ~ area_harvested*((scope1)+water_used)+data_year_id:giregion,data=df)
 
 # We create our first model
 
 # MODEL 1
 anova(lm(tonnes_grapes_harvested ~ data_year_id+giregion+area_harvested+water_used+scope1,data=df))
 summary(lm(tonnes_grapes_harvested ~ data_year_id+giregion+area_harvested+water_used+scope1,data=df))
-# Residual standard error: 0.3046 on 4239 degrees of freedom
-#  (591 observations deleted due to missingness)
-# Multiple R-squared:  0.9086,	Adjusted R-squared:  0.9072 
-# F-statistic: 668.5 on 63 and 4239 DF,  p-value: < 2.2e-16
+#Linear Regression 
+#
+#6068 samples
+#   5 predictor
+#
+#No pre-processing
+#Resampling: Cross-Validated (10 fold, repeated 100 times) 
+#Summary of sample sizes: 4768, 4767, 4768, 4769, 4768, 4769, ... 
+#Resampling results:
+#
+#  RMSE      Rsquared   MAE      
+#  0.308865  0.9044952  0.2164945
+#
+#Tuning parameter 'intercept' was held constant at a value of TRUE
 
 
 # MODEL 2
 # Lets look at ratios
 anova(lm(df$ha_tonnes_grapes_harvested ~ df$area_harvested*((df$scope1)+df$water_used)+df$data_year_id:df$giregion))
 summary(lm(df$ha_tonnes_grapes_harvested ~ df$area_harvested*((df$scope1)+df$water_used)+df$data_year_id:df$giregion))
-# Residual standard error: 0.4621 on 3901 degrees of freedom
-#  (591 observations deleted due to missingness)
-# Multiple R-squared:  0.8063,	Adjusted R-squared:  0.7864 
-# F-statistic: 40.51 on 401 and 3901 DF,  p-value: < 2.2e-16
+#Linear Regression 
+#
+#6068 samples
+#   5 predictor
+#
+#No pre-processing
+#Resampling: Cross-Validated (10 fold, repeated 100 times) 
+#Summary of sample sizes: 4768, 4768, 4768, 4769, 4769, 4768, ... 
+#Resampling results:
+#
+#  RMSE       Rsquared   MAE      
+#  0.5104218  0.7408576  0.3492901
+#
+#Tuning parameter 'intercept' was held constant at a value of TRUE
 
 # MODEL 3
 # We add Value to the model :P
@@ -34,6 +55,21 @@ summary(lm(value ~ data_year_id+giregion+area_harvested+water_used+scope1,data=d
 #   (2877 observations deleted due to missingness)
 # Multiple R-squared:  0.9723,	Adjusted R-squared:  0.9715 
 # F-statistic:  1274 on 54 and 1962 DF,  p-value: < 2.2e-16
+#Linear Regression 
+#
+#6068 samples
+#   5 predictor
+#
+#No pre-processing
+#Resampling: Cross-Validated (10 fold, repeated 100 times) 
+#Summary of sample sizes: 2590, 2590, 2591, 2590, 2590, 2591, ... 
+#Resampling results:
+#
+#  RMSE       Rsquared   MAE      
+#  0.1652455  0.9723429  0.1008465
+#
+#Tuning parameter 'intercept' was held constant at a value of TRUE
+
 
 # MODEL 4
 anova(lm(df$ha_value ~ df$area_harvested*((df$scope1)+df$water_used)+df$data_year_id:df$giregion))
@@ -42,6 +78,20 @@ summary(lm(df$ha_value ~ df$area_harvested*((df$scope1)+df$water_used)+df$data_y
 #   (2877 observations deleted due to missingness)
 # Multiple R-squared:  0.9662,	Adjusted R-squared:  0.962 
 # F-statistic: 227.9 on 225 and 1791 DF,  p-value: < 2.2e-16
+#Linear Regression 
+#
+#6068 samples
+#   5 predictor
+#
+#No pre-processing
+#Resampling: Cross-Validated (10 fold, repeated 100 times) 
+#Summary of sample sizes: 2590, 2590, 2590, 2590, 2590, 2591, ... 
+#Resampling results:
+#
+#  RMSE     Rsquared   MAE      
+#  0.22349  0.9500051  0.1279485
+#
+#Tuning parameter 'intercept' was held constant at a value of TRUE
 
 # note that vtha~tha is not a great predictor of one another.
 # but it is a significant variable!
