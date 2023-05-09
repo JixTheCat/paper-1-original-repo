@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read("df.csv")
+df = pd.read_csv("df.csv")
 
 selected = [
     "area_harvested"
@@ -9,12 +9,8 @@ selected = [
     , "water_used"
     , "total_tractor_passes"
     , "average_per_tonne"
-    , "total_operating_costs"
-    , "scope2"
     , "scope1"
-    , "total_emissions"
     , "fertiliser"
-    , "value"
 ]
 
 axes = pd.plotting.scatter_matrix(df[selected], figsize=[10,10], color=
